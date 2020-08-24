@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="initialColor" format="color"/>
+    <attr name="transparency" format="boolean"/>
+
+    <declare-styleable name="ColorPickerSlidersView">
+        <attr name="initialColor"/>
+        <attr name="transparency"/>
+    </declare-styleable>
+
+</resources>

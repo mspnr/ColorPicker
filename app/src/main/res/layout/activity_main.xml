@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:padding="12dp"
+    >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dialog"
+                style="@style/TextAppearance.AppCompat.Large"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change solid"
+                android:onClick="changeSolid"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change transparent"
+                android:onClick="changeTransparent"
+                />
+
+            <View
+                android:id="@+id/colorPatch"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="#f00"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Solid color"
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_marginTop="12dp"
+                />
+
+            <com.applikationsprogramvara.colorpicker.ColorPickerSlidersView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:transparency="false"
+                app:initialColor="#9B3232"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Transparent color"
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_marginTop="12dp"
+                />
+
+            <com.applikationsprogramvara.colorpicker.ColorPickerSlidersView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:transparency="true"
+                app:initialColor="#BE0F7D57"
+                />
+        </LinearLayout>
+    </ScrollView>
+
+
+</FrameLayout>
