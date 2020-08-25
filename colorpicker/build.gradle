@@ -2,9 +2,12 @@ plugins {
     id 'com.android.library'
 }
 
+apply plugin: 'com.github.dcendents.android-maven'
+
+group='com.github.applikationsprogramvara'
+
 android {
     compileSdkVersion 29
-    buildToolsVersion "30.0.1"
 
     defaultConfig {
         minSdkVersion 16
