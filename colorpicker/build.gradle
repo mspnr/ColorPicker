@@ -1,8 +1,9 @@
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
+plugins {
+    id 'com.android.library'
+    id 'com.github.dcendents.android-maven'
+}
 
 group = 'com.github.applikationsprogramvara'
-version = rootProject.ext.versionName
 
 android {
     compileSdkVersion 30

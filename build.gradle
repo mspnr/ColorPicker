@@ -14,12 +14,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url 'https://jitpack.io' }
     }
-}
-
-ext {
-    versionName = '1.0.0'
 }
 
 task clean(type: Delete) {
