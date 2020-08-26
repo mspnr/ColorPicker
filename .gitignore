@@ -14,7 +14,5 @@
 .cxx
 local.properties
 /.idea/
-/gradlew
-/gradlew.bat
 /app/build
 /colorpicker/build
