@@ -1,5 +1,5 @@
 # ColorPicker
-[![](https://jitpack.io/v/applikationsprogramvara/ColorPicker.svg)](https://jitpack.io/#applikationsprogramvara/ColorPicker/1.0.0)
+[![](https://jitpack.io/v/applikationsprogramvara/ColorPicker.svg)](https://jitpack.io/#applikationsprogramvara/ColorPicker/1.0.1)
 
 Color picker view library provides selection of a color via human-perceivable form [HSB](https://en.wikipedia.org/wiki/HSL_and_HSV) using three selectors: hue, saturation and brightness.
 The code is very simple and small (on August 2020).
@@ -41,7 +41,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 ``` gradle
 	dependencies {
-	        implementation 'com.github.applikationsprogramvara:ColorPicker:1.0.0'
+	        implementation 'com.github.applikationsprogramvara:ColorPicker:1.0.1'
 	}
 ```
 
