@@ -122,6 +122,10 @@ public class SliderWithNumber extends RelativeLayout {
         tv.requestLayout();
     }
 
+    public float normalize(int progress) {
+        return (float) progress / sb.getMax();
+    }
+
     interface  OnProgressChange {
         void action(int progress, boolean fromUser);
     }
@@ -142,8 +146,8 @@ public class SliderWithNumber extends RelativeLayout {
         sb.getThumb().setColorFilter(color, PorterDuff.Mode.DARKEN);
     }
 
-    public void setProgress(int progress) {
-        sb.setProgress(progress);
+    public void setProgress(float progress) {
+        sb.setProgress((int) (progress * sb.getMax()));
     }
 
     public void changeGradient(int color1, int color2) {

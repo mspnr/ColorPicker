@@ -33,10 +33,11 @@ public class ColorPickerSlidersView extends RelativeLayout {
     private float hue;
     private float saturation;
     private float lightness;
-    private int transparency;
+    private float transparency;
 
     private int initialColor;
     private boolean transparentColorsAvailable;
+    private boolean manipulatorsInitialized;
 
     public ColorPickerSlidersView(Context context) {
         super(context);
@@ -87,22 +88,21 @@ public class ColorPickerSlidersView extends RelativeLayout {
 
         snSat.setOnProgressChangeListener((int progress, boolean fromUser) -> {
             if (fromUser)
-                changeColor(-1, (float) progress / 100f, -1, -1);
+                changeColor(-1, snSat.normalize(progress), -1, -1);
             changeGradientBrightness();
             changeGradientTransparency();
         });
 
         snBri.setOnProgressChangeListener((int progress, boolean fromUser) -> {
             if (fromUser)
-                changeColor(-1, -1, (float) progress / 100f, -1);
+                changeColor(-1, -1, snBri.normalize(progress), -1);
             changeGradientSaturation();
             changeGradientTransparency();
-
         });
 
         snTra.setOnProgressChangeListener((int progress, boolean fromUser) -> {
             if (fromUser)
-                changeColor(-1, -1, -1, progress);
+                changeColor(-1, -1, -1, snTra.normalize(progress));
         });
 
         snHue.setOnLayoutChangeListener(this::changeGradientHue);
@@ -122,6 +122,8 @@ public class ColorPickerSlidersView extends RelativeLayout {
         tvColorAfter.setOnClickListener(confirmColor);
 
         setInitialParameters(initialColor, transparentColorsAvailable);
+
+        manipulatorsInitialized = false;
     }
 
     public void setInitialParameters(int initialColor, boolean transparentColorsAvailable) {
@@ -134,21 +136,31 @@ public class ColorPickerSlidersView extends RelativeLayout {
         hue = hsv[0];
         saturation = hsv[1];
         lightness = hsv[2];
-        transparency = transparentColorsAvailable ? Color.alpha(initialColor) : 255;
-        initManipulators();
+        transparency = transparentColorsAvailable ? (float) Color.alpha(initialColor) / 255f : 1f;
+
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        if (changed)
+            initManipulators();
     }
 
     private void initManipulators() {
+        if (manipulatorsInitialized) return;
+
         int color = getColor();
 
-        snHue.setProgress((int) hue);
-        snSat.setProgress((int) (saturation * 100f));
-        snBri.setProgress((int) (lightness * 100f));
+        snHue.setProgress(hue / 360f);
+        snSat.setProgress(saturation);
+        snBri.setProgress(lightness);
         snTra.setProgress(transparency);
         updateManipulators(color);
         updateText(color, ivColorBefore, tvColorBefore);
 
         snTra.setVisibility(transparentColorsAvailable ? View.VISIBLE : View.GONE);
+        manipulatorsInitialized = true;
     }
 
     private void updateManipulators(int color) {
@@ -167,10 +179,10 @@ public class ColorPickerSlidersView extends RelativeLayout {
     }
 
     public int getColor() {
-        return Color.HSVToColor(transparency, new float[] {hue, saturation, lightness} );
+        return Color.HSVToColor((int) (transparency * 255f), new float[] {hue, saturation, lightness} );
     }
 
-    private void changeColor(float h, float s, float l, int t) {
+    private void changeColor(float h, float s, float l, float t) {
         if (h >= 0) // 0-360
             hue = h;
 
@@ -180,7 +192,7 @@ public class ColorPickerSlidersView extends RelativeLayout {
         if (l >= 0) // 0-1
             lightness = l;
 
-        if (t >= 0) // 0-255
+        if (t >= 0) // 0-1
             transparency = t;
 
         int color = getColor();
