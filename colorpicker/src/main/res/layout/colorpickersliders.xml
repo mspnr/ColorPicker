@@ -69,6 +69,8 @@
         android:layout_height="wrap_content"
         android:progress="45"
         android:max="360"
+        app:title="Hue"
+        app:suffix="&#xb0;"
         />
 
     <com.applikationsprogramvara.colorpicker.SliderWithNumber
@@ -77,6 +79,8 @@
         android:layout_height="wrap_content"
         android:progress="45"
         android:max="100"
+        app:title="Saturation"
+        app:suffix="%"
         />
 
     <com.applikationsprogramvara.colorpicker.SliderWithNumber
@@ -85,6 +89,8 @@
         android:layout_height="wrap_content"
         android:progress="45"
         android:max="100"
+        app:title="Brightness"
+        app:suffix="%"
         />
 
     <com.applikationsprogramvara.colorpicker.SliderWithNumber
@@ -92,7 +98,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:progress="45"
-        android:max="255"
+        android:max="100"
+        app:title="Transparency"
+        app:suffix="%"
         />
 
 </LinearLayout>

@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 public class SliderWithNumber extends RelativeLayout {
     private SeekBar sb;
     private TextView tv;
+    private TextView tvTitle;
     private OnProgressChange onProgressChange;
     private OnLayoutChange onLayoutChange;
 
@@ -45,10 +46,15 @@ public class SliderWithNumber extends RelativeLayout {
                 android.R.attr.max,
                 android.R.attr.progress
         };
-        TypedArray attributes = context.obtainStyledAttributes(attrs, set);
 
+        TypedArray attributes = context.obtainStyledAttributes(attrs, set);
         int max = attributes.getInt(0, 100);    // android.R.attr.max,
-        int progress = attributes.getInt(1, 0); // android.R.attr.progress
+        @SuppressLint("ResourceType") int progress = attributes.getInt(1, 0); // android.R.attr.progress
+        attributes.recycle();
+
+        attributes = context.obtainStyledAttributes(attrs, R.styleable.SliderWithNumber);
+        String suffix = attributes.getString(R.styleable.SliderWithNumber_suffix);
+        String title = attributes.getString(R.styleable.SliderWithNumber_title);
         attributes.recycle();
 
         View view = inflate(getContext(), R.layout.slider, null);
@@ -56,6 +62,9 @@ public class SliderWithNumber extends RelativeLayout {
 
         sb = view.findViewById(R.id.sb1);
         tv = view.findViewById(R.id.tv1);
+        tvTitle = view.findViewById(R.id.tv2);
+        tvTitle.setText(title);
+        textColor = tvTitle.getCurrentTextColor();
 
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -74,6 +83,20 @@ public class SliderWithNumber extends RelativeLayout {
         sb.setMax(max);
         sb.setProgress(progress);
         sb.setSaveEnabled(false); // otherwise progress was always set to 100 on orientation change
+
+        tv.addOnLayoutChangeListener((v, l1, t1, r1, b1, l2, t2, r2, b2) -> {
+            int diff = tv.getLeft() - tvTitle.getRight();
+            float d = tvTitle.getContext().getResources().getDisplayMetrics().density * 30f;
+            float alpha;
+            if (diff <= 0)
+                alpha = 0;
+            else if (diff > d)
+                alpha = 1;
+            else
+                alpha = diff / d;
+
+            tvTitle.setTextColor(Color.argb((int) (alpha * 255f), Color.red(textColor), Color.green(textColor), Color.blue(textColor)));
+        });
     }
 
     @Override

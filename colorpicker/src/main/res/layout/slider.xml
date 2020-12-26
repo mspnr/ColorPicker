@@ -12,6 +12,15 @@
         android:layout_marginBottom="6dp"
         android:text="45" />
 
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="6dp"
+        android:text="Brightness"
+        />
+
     <SeekBar
         android:id="@+id/sb1"
         android:layout_width="match_parent"
