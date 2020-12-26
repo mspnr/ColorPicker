@@ -1,13 +1,21 @@
 package com.applikationsprogramvara.colorpicker;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -17,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 public class SliderWithNumber extends RelativeLayout {
     private SeekBar sb;
@@ -142,8 +151,48 @@ public class SliderWithNumber extends RelativeLayout {
         this.onLayoutChange = onLayoutChange;
     }
 
+    static RoundRectShape getRect(SeekBar sb) {
+        float r = sb.getHeight() / 4f;
+        return new RoundRectShape(new float[]{r, r, r, r, r, r, r, r}, null, null);
+    }
+
     public void setColorFilter(int color) {
-        sb.getThumb().setColorFilter(color, PorterDuff.Mode.DARKEN);
+        // option 1
+//        sb.getThumb().setColorFilter(color, PorterDuff.Mode.DARKEN);
+        sb.getThumb().clearColorFilter();
+
+        Rect thumbRect = sb.getThumb().getBounds();
+        float radius = thumbRect.width() / 2f;
+
+        // create bitmap
+        Bitmap bitmap = Bitmap.createBitmap(thumbRect.width(), thumbRect.height(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        // draw checker if the color is transparent
+        if (Color.alpha(color) < 0xFF) {
+            TypedValue a = new TypedValue();
+            getContext().getTheme().resolveAttribute(android.R.attr.windowBackground, a, true);
+            if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT && a.type <= TypedValue.TYPE_LAST_COLOR_INT)
+                canvas.drawColor(a.data);
+
+            Drawable checkerboard = ContextCompat.getDrawable(getContext(), R.drawable.checkerboard_background);
+            checkerboard.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            checkerboard.draw(canvas);
+        }
+
+        // draw the color and the outline
+        canvas.drawColor(color);
+        canvas.drawCircle(radius, radius, radius, getPaintOutline(getContext()));
+
+        // mask the thumb by circle
+        Bitmap maskBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas maskCanvas = new Canvas(maskBitmap);
+        maskCanvas.drawCircle(radius, radius, radius, new Paint());
+
+        // mask the final bitmap and assign to the thumb
+        canvas.drawBitmap(maskBitmap, 0, 0, new Paint() {{ setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN)); }});
+        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+        sb.setThumb(drawable);
     }
 
     public void setProgress(float progress) {
@@ -155,9 +204,72 @@ public class SliderWithNumber extends RelativeLayout {
         LinearGradient gradient = new LinearGradient(0.f, 0.f, sb.getWidth() - r.width(), sb.getHeight(), //SweepGradient
                 new int[] { color1, color2 }, null, Shader.TileMode.CLAMP);
 
-        ShapeDrawable shape = new ShapeDrawable(new RectShape());
-        shape.getPaint().setShader(gradient);
-        sb.setProgressDrawable(shape);
+        // option 1
+//        ShapeDrawable shape = new ShapeDrawable(SliderWithNumber.getRect(sb));
+//        shape.getPaint().setShader(gradient);
+//
+//        Drawable bbb = ContextCompat.getDrawable(getContext(), R.drawable.checkerboard_background);
+//        LayerDrawable a = new LayerDrawable(new Drawable[] { bbb, shape} );
+
+        // create bitmap
+        Bitmap bitmap = Bitmap.createBitmap(sb.getWidth() - r.width(), sb.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        // draw checker if one color is transparent
+        if (color1 == Color.TRANSPARENT) {
+            Drawable checkerboard = ContextCompat.getDrawable(getContext(), R.drawable.checkerboard_background);
+            checkerboard.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            checkerboard.draw(canvas);
+        }
+
+        canvas.drawPaint(new Paint() {{ setShader(gradient); }});
+
+        Bitmap maskBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas maskCanvas = new Canvas(maskBitmap);
+
+        // prepare a shape for outline an mask
+        float r2 = sb.getHeight() / 4f;
+        RoundRectShape maskShape = new RoundRectShape(new float[] {r2, r2, r2, r2, r2, r2, r2, r2}, null, null);
+//        maskShape.resize(bitmap.getWidth(), bitmap.getHeight() / 2f);
+
+        ShapeDrawable shapeDrawable = new ShapeDrawable(maskShape);
+        int verticalOffset = (int) (sb.getHeight() * .2f);
+        shapeDrawable.setBounds(0, verticalOffset, bitmap.getWidth(), bitmap.getHeight() - verticalOffset);
+        shapeDrawable.draw(maskCanvas);
+
+        // draw outline
+        shapeDrawable.getPaint().set(getPaintOutline(getContext()));
+        shapeDrawable.draw(canvas);
+
+        // mask the final bitmap and assign to the seekbar
+        canvas.drawBitmap(maskBitmap, 0, 0, new Paint() {{ setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN)); }});
+        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+        sb.setProgressDrawable(drawable);
+    }
+
+
+    static Paint getPaintOutline(final Context context) {
+
+        // select outline color bases on window color
+        TypedValue a = new TypedValue();
+        context.getTheme().resolveAttribute(android.R.attr.windowBackground, a, true);
+        int color;
+        if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT && a.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+
+            if (a.data < 0xFF888888) // dark mode
+                color = 0xFF444444;
+            else // light mode
+                color = 0xFFCCCCCC;
+        } else {
+            color = 0xFF888888;
+        }
+
+
+        return new Paint() {{
+            setStyle(Style.STROKE);
+            setStrokeWidth(context.getResources().getDisplayMetrics().density * 2);
+            setColor(color);
+        }};
     }
 
 }

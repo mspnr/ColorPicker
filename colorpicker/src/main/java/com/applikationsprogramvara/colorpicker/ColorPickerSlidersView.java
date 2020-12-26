@@ -2,12 +2,18 @@ package com.applikationsprogramvara.colorpicker;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,8 +22,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-
-import java.util.Locale;
+import androidx.core.content.ContextCompat;
 
 public class ColorPickerSlidersView extends RelativeLayout {
 
@@ -157,7 +162,7 @@ public class ColorPickerSlidersView extends RelativeLayout {
         snBri.setProgress(lightness);
         snTra.setProgress(transparency);
         updateManipulators(color);
-        updateText(color, ivColorBefore, tvColorBefore);
+        updateTextAndColorPatch(color, ivColorBefore, tvColorBefore, true);
 
         snTra.setVisibility(transparentColorsAvailable ? View.VISIBLE : View.GONE);
         manipulatorsInitialized = true;
@@ -168,14 +173,60 @@ public class ColorPickerSlidersView extends RelativeLayout {
         snBri.setColorFilter(Color.HSVToColor(new float[] {hue, saturation, lightness}));
         snTra.setColorFilter(color);
 
-        updateText(color, ivColorAfter, tvColorAfter);
+        updateTextAndColorPatch(color, ivColorAfter, tvColorAfter, false);
     }
 
-    private void updateText(int color, ImageView iv, TextView tv) {
-        iv.setBackgroundColor(color);
-        String strMain = String.format(Locale.ROOT, "%.0f\n%.0f\n%.0f", hue, saturation * 100f, lightness * 100f);
-        String strTransparency = String.format(Locale.ROOT, "\n%d", transparency);
-        tv.setText(strMain + (transparentColorsAvailable ? strTransparency : ""));
+    private void updateTextAndColorPatch(int color, ImageView iv, TextView tv, boolean before) {
+
+        // option 1
+//        ShapeDrawable shape = new ShapeDrawable(mask);
+//        shape.getPaint().setColor(color);
+//        iv.setBackground(shape);
+
+//        iv.setBackgroundColor(color);
+
+        if (iv.getWidth() == 0 || iv.getHeight() == 0) return;
+
+        // create bitmap
+        Bitmap bitmap = Bitmap.createBitmap(iv.getWidth(), iv.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        // draw checker if color is transparent
+        if (Color.alpha(color) < 0xFF) {
+            Drawable checkerboard = ContextCompat.getDrawable(getContext(), R.drawable.checkerboard_background);
+            checkerboard.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            checkerboard.draw(canvas);
+        }
+
+        canvas.drawColor(color);
+
+        Bitmap maskBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas maskCanvas = new Canvas(maskBitmap);
+
+        // prepare a shape for outline an mask
+        float rLeft = before ? getResources().getDisplayMetrics().density * 10 : 0;
+        float rRight = before ? 0 : getResources().getDisplayMetrics().density * 10;
+
+        RoundRectShape maskShape = new RoundRectShape(new float[] {rLeft, rLeft, rRight, rRight, rRight, rRight, rLeft, rLeft}, null, null);
+//        maskShape.resize(maskBitmap.getWidth(), maskBitmap.getHeight());
+        ShapeDrawable shapeDrawable = new ShapeDrawable(maskShape);
+        shapeDrawable.setBounds((int) -rRight, 0, (int) (bitmap.getWidth() + rLeft), bitmap.getHeight());
+        shapeDrawable.draw(maskCanvas);
+
+        shapeDrawable.getPaint().set(SliderWithNumber.getPaintOutline(getContext()));
+        shapeDrawable.draw(canvas);
+
+        // mask the final bitmap and assign to the patch
+        canvas.drawBitmap(maskBitmap, 0, 0, new Paint() {{ setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN)); }});
+        iv.setImageBitmap(bitmap);
+//        iv.setScaleType(ImageView.ScaleType.CENTER);
+//        iv.setBackground(null);
+
+        tv.setText(getContext().getString(R.string.color_summary,
+                (int) (hue),
+                (int) (saturation * 100f),
+                (int) (lightness * 100f),
+                transparentColorsAvailable ? "\n" + ((int) (transparency * 100f)) + "%" : ""));
     }
 
     public int getColor() {
@@ -213,7 +264,8 @@ public class ColorPickerSlidersView extends RelativeLayout {
                 },
                 null, Shader.TileMode.CLAMP);
 
-        ShapeDrawable shape = new ShapeDrawable(new RectShape());
+
+        ShapeDrawable shape = new ShapeDrawable(SliderWithNumber.getRect(sb));
         shape.getPaint().setShader(rainbow);
 
         sb.setProgressDrawable(shape);

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="color_summary">%1$d&#xb0;\n%2$d%%\n%3$d%%%4$s</string>
+
+</resources>
