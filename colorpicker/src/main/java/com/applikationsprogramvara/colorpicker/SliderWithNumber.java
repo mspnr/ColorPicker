@@ -9,7 +9,7 @@ import android.graphics.Shader;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -24,6 +24,7 @@ public class SliderWithNumber extends RelativeLayout {
     private TextView tvTitle;
     private OnProgressChange onProgressChange;
     private OnLayoutChange onLayoutChange;
+    private int textColor;
 
     public SliderWithNumber(Context context) {
         super(context);
@@ -72,8 +73,8 @@ public class SliderWithNumber extends RelativeLayout {
                 if (onProgressChange != null)
                     onProgressChange.action(progress, fromUser);
 
-                tv.setText(String.valueOf(progress));
-                shiftText(tv, sb);
+                tv.setText(String.valueOf(progress) + suffix);
+                shiftText();
             }
 
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -106,14 +107,18 @@ public class SliderWithNumber extends RelativeLayout {
         if (changed) {
             if (onLayoutChange != null)
                 onLayoutChange.action(sb);
-            shiftText(tv, sb);
+            shiftText();
         }
     }
 
-    private static void shiftText(TextView tv, SeekBar sb) {
-        Rect r = sb.getThumb().getBounds();
+    private void shiftText() {
+        tv.measure(0, 0);
+        Rect thumbRect = sb.getThumb().getBounds();
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) tv.getLayoutParams();
-        params.leftMargin = r.left  + r.width() / 2 - tv.getWidth() / 2;
+        params.leftMargin = Math.min(
+                thumbRect.left + thumbRect.width() / 2 - tv.getMeasuredWidth() / 2,
+                sb.getWidth() - tv.getMeasuredWidth()
+        );
         tv.requestLayout();
     }
 
