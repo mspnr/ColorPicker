@@ -37,34 +37,25 @@
             android:visibility="invisible"
             />
         </RelativeLayout>
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            >
-            <ImageView
-                android:id="@+id/ivColorBefore"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="#FF6F00"
-                android:contentDescription="Color before"
-                />
-        </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/checkerboard_background"
+        <ImageView
+            android:id="@+id/ivColorBefore"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="#FF6F00"
+            android:contentDescription="Color before"
             android:layout_gravity="center_vertical"
-            >
-            <ImageView
-                android:id="@+id/ivColorAfter"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="#00C853"
-                android:contentDescription="Selected color"
-                />
-        </FrameLayout>
+            />
+
+        <ImageView
+            android:id="@+id/ivColorAfter"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="#00C853"
+            android:contentDescription="Selected color"
+            android:layout_gravity="center_vertical"
+            />
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
