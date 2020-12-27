@@ -162,6 +162,8 @@ public class SliderWithNumber extends RelativeLayout {
         sb.getThumb().clearColorFilter();
 
         Rect thumbRect = sb.getThumb().getBounds();
+        if (thumbRect.width() == 0 || thumbRect.height() == 0) return;
+
         float radius = thumbRect.width() / 2f;
 
         // create bitmap
@@ -200,6 +202,7 @@ public class SliderWithNumber extends RelativeLayout {
     }
 
     public void changeGradient(int color1, int color2) {
+        if (sb.getWidth() == 0 || sb.getHeight() == 0) return;
         Rect r = sb.getThumb().getBounds();
         LinearGradient gradient = new LinearGradient(0.f, 0.f, sb.getWidth() - r.width(), sb.getHeight(), //SweepGradient
                 new int[] { color1, color2 }, null, Shader.TileMode.CLAMP);

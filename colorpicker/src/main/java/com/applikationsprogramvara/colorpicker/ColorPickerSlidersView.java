@@ -143,6 +143,7 @@ public class ColorPickerSlidersView extends RelativeLayout {
         lightness = hsv[2];
         transparency = transparentColorsAvailable ? (float) Color.alpha(initialColor) / 255f : 1f;
 
+        snTra.setVisibility(transparentColorsAvailable ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -164,7 +165,6 @@ public class ColorPickerSlidersView extends RelativeLayout {
         updateManipulators(color);
         updateTextAndColorPatch(color, ivColorBefore, tvColorBefore, true);
 
-        snTra.setVisibility(transparentColorsAvailable ? View.VISIBLE : View.GONE);
         manipulatorsInitialized = true;
     }
 
