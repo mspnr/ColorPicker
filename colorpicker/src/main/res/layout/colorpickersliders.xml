@@ -87,7 +87,7 @@
         android:layout_height="wrap_content"
         android:progress="45"
         android:max="360"
-        app:title="Hue"
+        app:title="@string/sliderHue"
         app:suffix="&#xb0;"
         />
 
@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:progress="45"
         android:max="100"
-        app:title="Saturation"
+        app:title="@string/sliderSaturation"
         app:suffix="%"
         />
 
@@ -107,7 +107,7 @@
         android:layout_height="wrap_content"
         android:progress="45"
         android:max="100"
-        app:title="Brightness"
+        app:title="@string/sliderBrightness"
         app:suffix="%"
         />
 
@@ -117,7 +117,7 @@
         android:layout_height="wrap_content"
         android:progress="45"
         android:max="100"
-        app:title="Transparency"
+        app:title="@string/sliderTransparency"
         app:suffix="%"
         />
 
