@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="sliderHue">Оттенок</string>
+    <string name="sliderSaturation">Насыщенность</string>
+    <string name="sliderBrightness">Яркость</string>
+    <string name="sliderTransparency">Прозрачность</string>
+
+</resources>

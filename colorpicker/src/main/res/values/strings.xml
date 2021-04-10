@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="color_summary">%1$d&#xb0;\n%2$d%%\n%3$d%%%4$s</string>
+    <string name="color_summary" translatable="false">%1$d&#xb0;\n%2$d%%\n%3$d%%%4$s</string>
 
     <string name="sliderHue">Hue</string>
     <string name="sliderSaturation">Saturation</string>
