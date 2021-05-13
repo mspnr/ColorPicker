@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="sliderHue">Teinte</string>
+    <string name="sliderSaturation">Saturation</string>
+    <string name="sliderBrightness">Luminosité</string>
+    <string name="sliderTransparency">Transparence</string>
+
+</resources>
